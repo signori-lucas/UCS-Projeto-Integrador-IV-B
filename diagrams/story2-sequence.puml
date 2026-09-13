@@ -1,0 +1,15 @@
+@startuml
+title Story 2 — Top10 (sex + state)
+actor User
+participant "Browser UI" as UI
+participant "app.js (Client)" as JS
+participant "Rankings API\n/ api/rankings" as RankingsAPI
+participant "IBGE (external)" as IBGE
+User -> UI: change sex/state
+UI -> JS: onChange -> loadRanking()
+JS -> RankingsAPI: GET /api/rankings?sex=M&state=SP
+RankingsAPI -> IBGE: (if integrated) fetch ranking
+IBGE --> RankingsAPI: ranking data
+RankingsAPI --> JS: 200 Top10 JSON
+JS -> UI: update ranking list
+@enduml

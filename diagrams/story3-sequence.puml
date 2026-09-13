@@ -1,0 +1,15 @@
+@startuml
+title Story 3 — Name search
+actor User
+participant "Browser UI" as UI
+participant "app.js" as JS
+participant "Names API\n/ api/names/search" as NamesAPI
+participant "IBGE (Nomes)" as IBGE
+User -> UI: type name + press search
+UI -> JS: doSearch()
+JS -> NamesAPI: GET /api/names/search?name=Maria&state=BR
+NamesAPI -> IBGE: (optional) call IBGE names endpoint
+IBGE --> NamesAPI: name frequency
+NamesAPI --> JS: 200 {name,total,frequency}
+JS -> UI: render result (no reload)
+@enduml

@@ -1,0 +1,16 @@
+@startuml
+start
+:Usuário digita nome;
+if (campo vazio?) then (sim)
+  :mostrar aviso (prevenir requisição);
+  stop
+else (não)
+  :enviar requisição /api/names/search?;
+  :receber resultado JSON;
+  if (resultado ok?) then (sim)
+	:exibir nome + total + frequência;
+  else (erro)
+	:mostrar erro;
+  endif
+stop
+@enduml

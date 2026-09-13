@@ -1,0 +1,15 @@
+@startuml
+title Story 4 — Ranking by Decade
+actor User
+participant "Browser UI" as UI
+participant "app.js" as JS
+participant "Rankings API\n/ api/rankings/by-decade" as DecadeAPI
+participant "IBGE (Rankings per decade)" as IBGE
+User -> UI: select decade (e.g., 1990)
+UI -> JS: onChange -> loadDecadeRanking()
+JS -> DecadeAPI: GET /api/rankings/by-decade?decada=1990&sex=all&state=BR
+DecadeAPI -> IBGE: (optional) query IBGE with decade parameter
+IBGE --> DecadeAPI: top10 for decade
+DecadeAPI --> JS: 200 decade-top10 JSON
+JS -> UI: render decade ranking (no reload)
+@enduml

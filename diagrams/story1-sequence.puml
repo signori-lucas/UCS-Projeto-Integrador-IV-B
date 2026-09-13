@@ -1,0 +1,18 @@
+@startuml
+title Story 1 — SPA Initialization and Interactions
+actor User
+participant "Browser UI" as UI
+participant "app.js (Client)" as JS
+participant "Rankings API\n/ api/rankings" as RankingsAPI
+note right: mock/IBGE client behind the API
+User -> UI: open page
+UI -> JS: load()
+JS -> RankingsAPI: GET /api/rankings?sex=all&state=BR
+RankingsAPI --> JS: 200 Top10 (mock)
+JS -> UI: render Top10
+JS -> RankingsAPI: GET /api/rankings/states
+RankingsAPI --> JS: 200 states list
+JS -> UI: render states dropdown
+User -> UI: interact (filters/search)
+UI -> JS: apply filter (no page reload)
+@enduml

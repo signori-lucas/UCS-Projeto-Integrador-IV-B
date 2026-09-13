@@ -1,0 +1,62 @@
+@startuml
+title Structural Models — Main Classes
+package "Models" {
+  class NameRanking {
+	+int Rank
+	+string Name
+	+long Total
+  }
+  class NameSearchResult {
+	+string Name
+	+long Total
+	+double Frequency
+  }
+  class StateModel {
+	+string Code
+	+string Name
+  }
+}
+package "API / Services" {
+  class RankingsController {
+	+Get(sex, state, decada)
+	+GetStates()
+	+GetByDecade(decada,sex,state)
+  }
+  class NamesController {
+	+Search(name,state)
+  }
+  class RankingService {
+	+GetTop10(sex,state)
+	+GetTop10ByDecade(decada,sex,state)
+  }
+  class NameService {
+	+SearchName(name,state)
+  }
+  class IBGEClient {
+	+FetchRankings(params)
+	+FetchNameInfo(name)
+  }
+}
+package "UI Components" {
+  class SearchPanel {
+	-input name
+	-btnSearch()
+	-btnClear()
+  }
+  class Top10Panel {
+	-list NameRanking
+  }
+  class DecadePanel {
+	-decadeSelector
+	-list NameRanking
+  }
+}
+' Relations
+RankingsController --> RankingService
+NamesController --> NameService
+RankingService --> IBGEClient
+NameService --> IBGEClient
+Top10Panel ..> RankingService : uses
+DecadePanel ..> RankingService : uses
+SearchPanel ..> NameService : uses
+@enduml

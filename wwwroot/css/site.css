@@ -1,0 +1,129 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+.spa-app {
+  padding-top: 1rem;
+}
+
+.spa-app h2 {
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 0.25rem;
+}
+.spa-app .lead {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  color: #6c757d;
+}
+
+.spa-app .card.h-100 { min-height: 300px; }
+.search-card .input-group { gap: 0.5rem; }
+.w-md-75 { max-width: 75%; }
+.w-lg-50 { max-width: 50%; }
+.search-card .card-body { display: flex; flex-direction: column; }
+.search-card .input-group { width: 100%; }
+.card .form-select-sm { min-width: 120px; }
+.search-card .search-filters { margin-left: 0.5rem; }
+.search-card .min-w-200 { min-width: 200px; }
+.search-card .form-select-sm { min-width: 110px; }
+.search-card .d-flex .form-select { height: calc(2.25rem + 2px); }
+
+/* Allow input to shrink/grow inside flex container so it fills available space */
+.search-card .input-group .form-control { min-width: 0; flex: 1 1 auto; }
+.search-card .search-filters { flex: 0 0 auto; }
+
+/* Visual polish */
+body {
+  background: linear-gradient(180deg,#f7fbff 0%, #ffffff 100%);
+  color: #212529;
+}
+
+.card {
+  border: 0;
+  border-radius: 0.75rem;
+  box-shadow: 0 6px 18px rgba(20,40,60,0.08);
+}
+
+.card-header {
+  background: linear-gradient(90deg, rgba(37,99,235,0.08), rgba(14,165,233,0.04));
+  font-weight: 600;
+  color: #0f172a;
+  border-bottom: 1px solid rgba(15,23,42,0.06);
+}
+
+.input-group .form-control {
+  border-radius: 0.5rem 0 0 0.5rem;
+  border: 1px solid rgba(15,23,42,0.08);
+  padding: 0.625rem 0.75rem;
+  font-size: 0.95rem;
+}
+
+.input-group .btn {
+  border-radius: 0 0.5rem 0.5rem 0;
+  padding: 0.55rem 0.9rem;
+}
+
+.btn-primary {
+  background: linear-gradient(90deg,#2563eb,#06b6d4);
+  border: none;
+}
+.btn-outline-secondary {
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.list-group-item {
+  transition: background .12s ease, transform .06s ease;
+}
+.list-group-item:hover {
+  background: rgba(37,99,235,0.03);
+  transform: translateY(-2px);
+}
+
+.badge.rounded-pill {
+  font-weight: 600;
+}
+
+#messages {
+  min-height: 20px;
+}
+
+@media (max-width: 767.98px) {
+  .search-card .search-filters { width: 100%; margin-top: 0.5rem; }
+  .search-card .min-w-200 { min-width: 0; }
+}
+.search-card .card-body { display: flex; flex-direction: column; }
+.search-card .input-group { width: 100%; }
+.card .form-select-sm { min-width: 120px; }
+.search-card .search-filters { margin-left: 0.5rem; }
+.search-card .min-w-200 { min-width: 200px; }
+.search-card .form-select-sm { min-width: 110px; }
+.search-card .d-flex .form-select { height: calc(2.25rem + 2px); }
+
+.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+  color: var(--bs-secondary-color);
+  text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+  text-align: start;
+}
