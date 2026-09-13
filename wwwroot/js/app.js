@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultTotal = document.getElementById('result-total');
     const resultFrequency = document.getElementById('result-frequency');
     function showMessage(text, isError) {
-        // messages element removed from layout. Keep console logging for debugging.
         if (isError) console.error(text); else console.log(text);
     }
 
@@ -21,12 +20,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const states = await res.json();
             states.forEach(s => {
                 const opt = document.createElement('option');
-                opt.value = s.code;
+                opt.value = s.id;
                 opt.textContent = s.name;
                 selectState.appendChild(opt);
             });
         } catch (err) {
-            showMessage('Não foi possível carregar as unidades da federação (mock).', true);
+            showMessage('Não foi possível carregar as unidades da federação.', true);
         }
     }
 
@@ -35,17 +34,34 @@ document.addEventListener('DOMContentLoaded', () => {
         const state = selectState.value;
         rankingList.innerHTML = '<li class="list-group-item">Carregando...</li>';
         try {
-            const res = await fetch(`/api/rankings?sex=${encodeURIComponent(sex)}&state=${encodeURIComponent(state)}`);
-            const list = await res.json();
+            let url = `/api/rankings?sex=${encodeURIComponent(sex)}`;
+            if (state) url += `&stateId=${encodeURIComponent(state)}`;
+            const res = await fetch(url);
+            const data = await res.json();
             rankingList.innerHTML = '';
-            if (!list || list.length === 0) {
+            // Data may be returned in different shapes; normalize below
+            let items = [];
+            if (Array.isArray(data) && data.length > 0) {
+                const first = data[0];
+                if (first && first.res && Array.isArray(first.res)) {
+                    items = first.res.map((r, i) => ({ rank: r.ranking ?? (i + 1), name: r.nome, total: r.frequencia }));
+                } else if (first && (first.nome || first.frequencia)) {
+                    items = data.map((r, i) => ({ rank: r.ranking ?? (i + 1), name: r.nome, total: r.frequencia }));
+                } else {
+                    // already in NameRanking shape
+                    items = data.map((r, i) => ({ rank: r.rank ?? (i + 1), name: r.name ?? r.nome ?? '', total: r.total ?? r.frequencia ?? 0 }));
+                }
+            }
+
+            if (!items || items.length === 0) {
                 rankingList.innerHTML = '<li class="list-group-item">Nenhum resultado</li>';
                 return;
             }
-            list.forEach(item => {
+
+            items.forEach(item => {
                 const li = document.createElement('li');
                 li.className = 'list-group-item d-flex justify-content-between align-items-center';
-                li.innerHTML = `<div><strong>${item.rank}. ${item.name}</strong></div><span class="badge bg-primary rounded-pill">${item.total.toLocaleString()}</span>`;
+                li.innerHTML = `<div><strong>${item.rank}. ${item.name}</strong></div><span class="badge bg-primary rounded-pill">${Number(item.total).toLocaleString()}</span>`;
                 rankingList.appendChild(li);
             });
         } catch (err) {
@@ -60,17 +76,32 @@ document.addEventListener('DOMContentLoaded', () => {
         const target = document.getElementById('decade-ranking-list');
         target.innerHTML = '<li class="list-group-item">Carregando...</li>';
         try {
-            const res = await fetch(`/api/rankings/by-decade?decada=${encodeURIComponent(decada)}&sex=${encodeURIComponent(sex)}&state=${encodeURIComponent(state)}`);
-            const list = await res.json();
+            let url = `/api/rankings/by-decade?decada=${encodeURIComponent(decada)}&sex=${encodeURIComponent(sex)}`;
+            if (state) url += `&stateId=${encodeURIComponent(state)}`;
+            const res = await fetch(url);
+            const data = await res.json();
             target.innerHTML = '';
-            if (!list || list.length === 0) {
+            let items = [];
+            if (Array.isArray(data) && data.length > 0) {
+                const first = data[0];
+                if (first && first.res && Array.isArray(first.res)) {
+                    items = first.res.map((r, i) => ({ rank: r.ranking ?? (i + 1), name: r.nome, total: r.frequencia }));
+                } else if (first && (first.nome || first.frequencia)) {
+                    items = data.map((r, i) => ({ rank: r.ranking ?? (i + 1), name: r.nome, total: r.frequencia }));
+                } else {
+                    items = data.map((r, i) => ({ rank: r.rank ?? (i + 1), name: r.name ?? r.nome ?? '', total: r.total ?? r.frequencia ?? 0 }));
+                }
+            }
+
+            if (!items || items.length === 0) {
                 target.innerHTML = '<li class="list-group-item">Nenhum resultado</li>';
                 return;
             }
-            list.forEach(item => {
+
+            items.forEach(item => {
                 const li = document.createElement('li');
                 li.className = 'list-group-item d-flex justify-content-between align-items-center';
-                li.innerHTML = `<div><strong>${item.rank}. ${item.name}</strong></div><span class="badge bg-secondary rounded-pill">${item.total.toLocaleString()}</span>`;
+                li.innerHTML = `<div><strong>${item.rank}. ${item.name}</strong></div><span class="badge bg-secondary rounded-pill">${Number(item.total).toLocaleString()}</span>`;
                 target.appendChild(li);
             });
         } catch (err) {
@@ -87,11 +118,34 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         showMessage('Pesquisando...');
         try {
-            const res = await fetch(`/api/names/search?name=${encodeURIComponent(name)}&state=${encodeURIComponent(state)}`);
+            const decada = decadeSelector ? decadeSelector.value : '';
+            let url = `/api/names/search?name=${encodeURIComponent(name)}`;
+            if (decada) url += `&decada=${encodeURIComponent(decada)}`;
+            if (state) url += `&stateId=${encodeURIComponent(state)}`;
+            const res = await fetch(url);
+            if (res.status === 404) {
+                // Name not found
+                if (searchResult) searchResult.style.display = 'block';
+                if (resultName) resultName.textContent = '';
+                if (resultTotal) resultTotal.textContent = '';
+                if (resultFrequency) resultFrequency.textContent = '';
+                const msg = document.getElementById('search-message');
+                if (msg) {
+                    msg.textContent = 'Nome não encontrado';
+                    msg.style.display = 'block';
+                }
+                return;
+            }
+
             if (!res.ok) {
                 throw new Error('fail');
             }
+
             const data = await res.json();
+            // Hide previous message
+            const msg = document.getElementById('search-message');
+            if (msg) { msg.textContent = ''; msg.style.display = 'none'; }
+
             resultName.textContent = data.name;
             resultTotal.textContent = `Total de registros: ${data.total.toLocaleString()}`;
             resultFrequency.textContent = `Frequência: ${data.frequency}`;
@@ -99,6 +153,10 @@ document.addEventListener('DOMContentLoaded', () => {
             showMessage('Resultado carregado.');
         } catch (err) {
             showMessage('Erro ao pesquisar nome.', true);
+            // show generic error in UI
+            if (searchResult) searchResult.style.display = 'block';
+            const msg = document.getElementById('search-message');
+            if (msg) { msg.textContent = 'Erro ao pesquisar nome.'; msg.style.display = 'block'; }
         }
     }
 

@@ -7,27 +7,36 @@ namespace UCS_Projeto_Integrador_IV_B.Controllers.Api
     [Route("api/[controller]")]
     public class NamesController : ControllerBase
     {
-        // GET: api/names/search?name=Maria&state=BR
+        private readonly UCS_Projeto_Integrador_IV_B.Services.IIBGERankingService _rankingService;
+
+        public NamesController(UCS_Projeto_Integrador_IV_B.Services.IIBGERankingService rankingService)
+        {
+            _rankingService = rankingService;
+        }
+
+        // GET: api/names/search?name=Maria&stateId=1
         [HttpGet("search")]
-        public ActionResult<NameSearchResult> Search([FromQuery] string name, [FromQuery] string state = "BR")
+        public async Task<ActionResult<NameSearchResult>> Search([FromQuery] string name, [FromQuery] string decada = null, [FromQuery] int stateId = 0)
         {
             if (string.IsNullOrWhiteSpace(name))
                 return BadRequest("name is required");
 
-            // Mocked response - in real implementation call IBGE names API
-            var normalized = name.Trim();
-            var rnd = new Random(normalized.GetHashCode() ^ state.GetHashCode());
-            var total = Math.Abs(rnd.Next(1000, 20000000));
-            var freq = Math.Round((double)(total % 1000) / 1000.0, 4);
-
-            var result = new NameSearchResult
+            try
             {
-                Name = normalized,
-                Total = total,
-                Frequency = freq
-            };
+                var result = await _rankingService.SearchByNameAsync(name.Trim(), decada, stateId);
+                if (result == null)
+                    return NotFound();
 
-            return Ok(result);
+                return Ok(result);
+            }
+            catch (HttpRequestException hre)
+            {
+                return StatusCode(502, "Error fetching data from IBGE: " + hre.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
     }
 }
