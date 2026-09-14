@@ -21,7 +21,7 @@ EXECUTAR O PROJETO
    - Setar a variável de ambiente
       - `$env:ASPNETCORE_ENVIRONMENT = 'Production'`
    - Executar o comando para rodar a aplicação
-      - `dotnet .\UCS-ProjetoIntegrador-III-B.dll`
+      - `dotnet .\UCS-Projeto Integrador IV-B.dll`
    - Acessar via browser o endereço retornado no terminal
       - Ex: "Now listening on: http://localhost:5000"
       - `http://localhost:5000`
@@ -34,7 +34,7 @@ Requisitos
 
 Execução
 --------
-Abra terminal na pasta do projeto (`UCS-ProjetoIntegrador-III-B`) e execute:
+Abra terminal na pasta do projeto (`UCS-Projeto Integrador IV-B`) e execute:
 
 ```
 dotnet restore
